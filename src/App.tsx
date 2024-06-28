@@ -19,7 +19,7 @@ import { BleEventType, BleState } from './components/sdk/fat/type';
 import DeviceManager from './components/sdk/fat/DeviceManager';
 import FastImage from 'react-native-fast-image';
 
-// 注意: 需要确保全局只有一个实例，因为BleModule类保存着蓝牙的连接信息
+// Note: It is necessary to ensure that there is only one instance globally, as the BleModule class stores Bluetooth connection information
 
 const deviceManager = DeviceManager.getInstance();
 
@@ -27,7 +27,7 @@ const deviceManager = DeviceManager.getInstance();
 const bleProtocol = deviceManager.getBleProtocol()
 
 const App: React.FC = () => {
-  // 蓝牙是否连接
+  // Is Bluetooth connected
   const [isConnected, setIsConnected] = useState(false);
   // 正在扫描中
   const [scaning, setScaning] = useState(false);
@@ -35,20 +35,13 @@ const App: React.FC = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
   // 当前正在连接的蓝牙id
   const [connectingId, setConnectingId] = useState('');
-  // 写数据
-  const [writeData, setWriteData] = useState('');
-  // 接收到的数据
-  const [receiveData, setReceiveData] = useState('');
-  // 读取的数据
-  const [readData, setReadData] = useState('');
+
   // 输入的内容
   const [imgBase, setImgBase64] = useState('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==');
   // 扫描的蓝牙列表
   const [data, setData] = useState<Peripheral[]>([]);
 
-  /** 蓝牙接收的数据缓存 */
-  const bleReceiveData = useRef<any[]>([]);
-  /** 使用Map类型保存搜索到的蓝牙设备，确保列表不显示重复的设备 */
+  /** Use Map type to save the searched Bluetooth devices and ensure that the list does not display duplicate devices */
   const deviceMap = useRef(new Map<string, Peripheral>());
 
   deviceManager.setDeviceListener({
@@ -69,11 +62,11 @@ const App: React.FC = () => {
     },
     onReceiveImg: (data: string,imgState:number) => {
         //console.log('onReceiveImg',data,imgState);
-        if(imgState == 16){//开始帧
+        if(imgState == 16){//Start Frame
 
-        }else if(imgState == 1){//结束帧
+        }else if(imgState == 1){//End frame
 
-        }else{//中间帧
+        }else{//Intermediate frame
 
         }
         setImgBase64('data:image/png;base64,'+data)
@@ -81,19 +74,20 @@ const App: React.FC = () => {
     onCmdResult(msgId,errorCode) {
        //errorCode 8:成功，非8:失败
        if(errorCode == 8){
-          // 执行成功
+          // Execution succeeded
+
        }
         console.log("onCmdResult",msgId,errorCode)
     },
     onDiscover: (data: Peripheral) => {
       let id;
-      // 蓝牙 Mac 地址
+      // Bluetooth Mac address
       let macAddress;
       if (Platform.OS == 'android') {
         macAddress = data.id;
         id = macAddress;
       } else {
-        // ios连接时不需要用到Mac地址，但跨平台识别同一设备时需要 Mac 地址
+        // Mac address is not required for iOS connection, but it is required for cross platform recognition of the same device
         macAddress = bleProtocol.getMacFromAdvertising(data);
         id = data.id;
       }
@@ -109,7 +103,7 @@ const App: React.FC = () => {
         case BleState.On:
           break
         case BleState.Off:
-          Alert.alert('蓝牙未打开');
+          Alert.alert('Bluetooth not turned on');
           break;
         case BleState.TurningOn:
           break;
@@ -132,12 +126,9 @@ const App: React.FC = () => {
 
 
   function initData() {
-    // 断开后显示上次的扫描结果
+    // Display last scan result after disconnection
     setData([...deviceMap.current.values()]);
     setIsConnected(false);
-    setWriteData('');
-    setReadData('');
-    setReceiveData('');
 
   }
 
@@ -150,7 +141,7 @@ const App: React.FC = () => {
       return;
     }
 
-    // 重新扫描时清空列表
+    // Clear list during rescan
     deviceMap.current.clear();
 
     setData([]);
@@ -167,15 +158,15 @@ const App: React.FC = () => {
 
   function enableBluetooth() {
     if (Platform.OS === 'ios') {
-      alert('请开启手机蓝牙');
+      alert('Please enable Bluetooth on your phone');
     } else {
-      Alert.alert('提示', '请开启手机蓝牙', [
+      Alert.alert('prompt', 'Please enable Bluetooth on your phone', [
         {
-          text: '取消',
+          text: 'Cancel',
           onPress: () => { },
         },
         {
-          text: '打开',
+          text: 'Open',
           onPress: () => {
             deviceManager.getBleModule().enableBluetooth();
           },
@@ -184,12 +175,12 @@ const App: React.FC = () => {
     }
   }
 
-  /** 连接蓝牙 */
+  /** Connecting Bluetooth */
   function connect(item: Peripheral) {
     setConnectingId(item.id);
 
     if (scaning) {
-      // 当前正在扫描中，连接时关闭扫描
+      // Currently scanning, close scanning when connecting
       deviceManager.getBleModule().stopScan().then(() => {
         setScaning(false);
       });
@@ -198,35 +189,21 @@ const App: React.FC = () => {
     deviceManager.connect(item.id)
       .then(_peripheralInfo => {
         setIsConnected(true);
-        // 连接成功后，列表只显示已连接的设备
+        // After successful connection, the list only shows connected devices
         setData([item]);
       })
       .catch(_err => {
-        alert('连接失败');
+        alert('connect failed');
       })
       .finally(() => {
         setConnectingId('');
       });
   }
 
-  /** 断开连接 */
+  /** Disconnect */
   function disconnect() {
     deviceManager.disconnect();
     initData();
-  }
-
-  function notify(index: number) {
-    console.log('notify', index);
-    deviceManager.getBleModule()
-      .startNotification(index)
-      .then(() => {
-        setIsMonitoring(true);
-        alert('开启成功');
-      })
-      .catch(_err => {
-        setIsMonitoring(false);
-        alert('开启失败');
-      });
   }
 
 
@@ -278,7 +255,6 @@ const App: React.FC = () => {
 
       <View style={{ flex: 1 }}>
         {isConnected && (
-          // 请记得指定宽高！
           <FastImage
             style={{
               width: '100%',

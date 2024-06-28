@@ -217,6 +217,7 @@ export default class DeviceManager {
                     //    let argbArray= new Array(477).fill(200)
                     const base64Image = await BitmapModule.getBitmapFromPath(this.bleReceiveData, 200, deviceImgDepth);
                     DeviceManager.getInstance().listener?.onReceiveImg(base64Image, this.imgState);
+                    DeviceManager.getInstance().listener?.onReceiveData(this.bleReceiveData);
                 }
 
                 this.tempReceiveData = []

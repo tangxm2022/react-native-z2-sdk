@@ -43,9 +43,9 @@ const Header: React.FC<HeaderProps> = ({
   const setDeviceSendCycle = () => {
     DeviceManager.getInstance().setDeviceSendCycle(40).then(isSuccess => {
       if (isSuccess) {
-        Alert.alert("执行成功")
+        Alert.alert("Execution succeeded")
       } else {
-        Alert.alert("执行失败")
+        Alert.alert("Execution failed")
       }
     })
       .catch(error => {
@@ -57,28 +57,28 @@ const Header: React.FC<HeaderProps> = ({
   const setDeviceDepth = () => {
     DeviceManager.getInstance().setDeviceDepth(2).then(isSuccess => {
       if (isSuccess) {
-        Alert.alert("执行成功")
+        Alert.alert("Execution succeeded")
       } else {
-        Alert.alert("执行失败")
+        Alert.alert("Execution failed")
       }
     })
       .catch(error => {
-        console.error('检查外设连接状态时出错:', error);
+        console.error('Error checking peripheral connection status:', error);
       });
     
 
   };
 
-  const setDeviceDyn = () => {
+  const setDeviceGain = () => {
     DeviceManager.getInstance().setDeviceGain(40).then(isSuccess => {
       if (isSuccess) {
-        Alert.alert("执行成功")
+        Alert.alert("Execution succeeded")
       } else {
-        Alert.alert("执行失败")
+        Alert.alert("Execution failed")
       }
     })
       .catch(error => {
-        console.error('检查外设连接状态时出错:', error);
+        console.error('Error checking peripheral connection status:', error);
       });
     ;
 
@@ -96,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({
       
     })
       .catch(error => {
-        console.error('检查外设连接状态时出错:', error);
+        console.error('Error checking peripheral connection status:', error);
       });
     ;
 
@@ -133,18 +133,15 @@ const Header: React.FC<HeaderProps> = ({
         {isConnected && (
           <>
 
+    
             <View style={{ marginLeft: 10, marginTop: 10 }}>
-              <Button title="设置发射周期" onPress={setDeviceSendCycle} />
-            </View>
-
-            <View style={{ marginLeft: 10, marginTop: 10 }}>
-              <Button title="设置设备深度" onPress={setDeviceDepth} />
+              <Button title="Set device depth" onPress={setDeviceDepth} />
             </View>
             <View style={{ marginLeft: 10, marginTop: 10 }}>
-              <Button title="设置设备增益" onPress={setDeviceDyn} />
+              <Button title="Set device gain" onPress={setDeviceGain} />
             </View>
             <View style={{ marginLeft: 10, marginTop: 10 }}>
-              <Button title="获取设置电量" onPress={getBattery} />
+              <Button title="Get set battery level" onPress={getBattery} />
             </View>
           </>
         )}
