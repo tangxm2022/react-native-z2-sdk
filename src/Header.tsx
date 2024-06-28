@@ -26,7 +26,24 @@ const requestCameraPermission = async () => {
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       console.log("You can use the LOCATION");
     } else {
-      console.log("Camera permission denied");
+      console.log("LOCATION permission denied");
+    }
+    let grantedFine = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: "Cool Photo App LOCATION Permission",
+        message:
+          "Cool Photo App needs access to your LOCATION " +
+          "so you can take awesome pictures.",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK"
+      }
+    );
+    if (grantedFine === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log("You can use the LOCATION");
+    } else {
+      console.log("LOCATION permission denied");
     }
   } catch (err) {
     console.warn(err);
